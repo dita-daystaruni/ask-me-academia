@@ -1,0 +1,18 @@
+# AI packages
+langchain_openai
+langchain_community
+openai
+python-dotenv
+langchain_groq
+pypdf
+
+# Django Web packages
+django
+djangorestframework
+markdown
+django-filter
+django-cors-headers
+django_daraja
+python-dotenv
+whitenoise     
+psycopg2 

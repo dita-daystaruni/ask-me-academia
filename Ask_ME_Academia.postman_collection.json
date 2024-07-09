@@ -1,0 +1,58 @@
+{
+	"info": {
+		"_postman_id": "12c79b6c-e682-45c2-952f-123c7cd9e530",
+		"name": "Ask_ME_Academia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16894428",
+		"_collection_link": "https://red-desert-41237.postman.co/workspace/My-Workspace~95ef2c9a-f61d-4e46-837d-586f5958b088/collection/16894428-12c79b6c-e682-45c2-952f-123c7cd9e530?action=share&source=collection_link&creator=16894428"
+	},
+	"item": [
+		{
+			"name": "post",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pdf_file",
+							"type": "file",
+							"src": [
+								"/C:/Users/Wayne/Desktop/New folder/Project Report - test doc.docx",
+								"/C:/Users/Wayne/Desktop/New folder/Business plan test doc.pdf"
+							]
+						},
+						{
+							"key": "title",
+							"value": "project_test",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "0",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/upload/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"upload",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
