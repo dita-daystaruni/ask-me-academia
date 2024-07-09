@@ -1,4 +1,4 @@
-# Django Study Assistant Project
+# Ask-Me (an Dasytar 🌟  Academia Study Assistant Project)
 
 ## Overview
 
