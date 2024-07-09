@@ -1,4 +1,4 @@
-# Ask-Me (an Dasytar 🌟  Academia Study Assistant Project)
+# Ask-Me ,a Dasytar 🌟  Academia Study Assistant Project
 
 ## Overview
 
