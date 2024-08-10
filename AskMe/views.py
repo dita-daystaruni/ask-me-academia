@@ -20,6 +20,8 @@ class LectureNotesUploadView(APIView):
 
     def post(self, request, *args, **kwargs):
         file_serializer = LectureNotesSerializer(data=request.data)
+        multi_choice = True if request.data.get('multi_choice') == 'true' else False
+        
         if file_serializer.is_valid():
             pdf_file = request.FILES.get('pdf_file')
             if not pdf_file:
@@ -32,18 +34,18 @@ class LectureNotesUploadView(APIView):
             if pdf_text is None:
                 return Response({"error": "The PDF does not contain extractable text or an error occurred."}, status=status.HTTP_400_BAD_REQUEST)
 
-            questions_and_answers = get_questions_and_answers(pdf_text)
+            questions_and_answers = get_questions_and_answers(pdf_text,request.data.get('multi_choice'))
             if questions_and_answers is None:
                 return Response({"error": "An error occurred while generating questions and answers."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             # Save the LectureNotes instance with the LLM response
-            lecture_notes = LectureNotes.objects.create(
-                user_id=request.data['user_id'],
-                title=request.data['title'],
-                q_and_a=questions_and_answers.dict()
-            )
+            # lecture_notes = LectureNotes.objects.create(
+            #     user_id=request.data['user_id'],
+            #     title=request.data['title'],
+            #     q_and_a=questions_and_answers.dict()
+            # )
 
-            return Response(file_serializer.data, status=status.HTTP_201_CREATED)
+            return Response(questions_and_answers, status=status.HTTP_201_CREATED)
         else:
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
