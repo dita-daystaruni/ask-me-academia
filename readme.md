@@ -39,7 +39,7 @@ python manage.py migrate
 
 ### 5. Create a .env File
 ```bash
-GROQ_API_KEY=your_groq_api_key
+OPENAI_API_KEY=your_openai_api_key
 ```
 ### 6. Start the Development Server
 ```bash
