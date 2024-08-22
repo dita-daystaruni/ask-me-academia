@@ -148,7 +148,7 @@ def get_questions_and_answers(text, multiple_choice=True):
         if multiple_choice:
             #use the multi choice model
             prompt = ChatPromptTemplate.from_messages([("system", SystemMessage), ("human", human_text)])
-            chain = prompt | model.bind(functions = openai_multi_function) | multiParser
+            chain = prompt | model | multiParser
             results = chain.invoke({"text": text})
             # results
             return results

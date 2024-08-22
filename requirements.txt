@@ -12,7 +12,7 @@ djangorestframework
 markdown
 django-filter
 django-cors-headers
-django_daraja
+django_darajaj
 python-dotenv
 whitenoise     
 psycopg2 

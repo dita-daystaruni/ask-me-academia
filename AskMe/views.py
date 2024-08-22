@@ -34,7 +34,7 @@ class LectureNotesUploadView(APIView):
             if pdf_text is None:
                 return Response({"error": "The PDF does not contain extractable text or an error occurred."}, status=status.HTTP_400_BAD_REQUEST)
 
-            questions_and_answers = get_questions_and_answers(pdf_text,request.data.get('multi_choice'))
+            questions_and_answers = get_questions_and_answers(pdf_text,multi_choice)
             if questions_and_answers is None:
                 return Response({"error": "An error occurred while generating questions and answers."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
