@@ -12,7 +12,7 @@ from typing import List
 class SingleQuestion(BaseModel):
     question: str = Field(
         title="Question",
-        description="question from the lecture notes",
+        description="True or false question from the lecture notes",
     )
     answer: bool = Field(
         title="boolean answer",
@@ -91,9 +91,10 @@ human_text_bianry = """
 
 ### out put instaction ###
 - The system should generate 10 questions and answers based on the lecture notes.
+- The question should be in True or False format. and the answer should be either True or False.
 - The format of the output should be in the format bellow:
     {{"questions":[
-        {{"Question": "Question1", "Answer": "True}},
+        {{"Question": "Question1", "Answer": "True"}},
         {{"Question2": "Question2", "Answer":"False"}},
         ...]}}
         
@@ -118,7 +119,7 @@ bellow are the attached notes:
 """
 
 
-def get_muti_QnA(text,SystemMessage = SystemMessage):
+def get_muti_QnA(text):
     try:
 
         #use the multi choice model
@@ -135,11 +136,7 @@ def get_muti_QnA(text,SystemMessage = SystemMessage):
         raise e
     
 def get_binary_QnA(text):
-    max_context_length = 8000
-    current_length = len(text.split())
-       
-    if current_length > max_context_length:
-        text = " ".join(text.split()[:max_context_length])
+
     try:
         prompt = PromptTemplate(
                                 template = human_text_bianry,
@@ -166,9 +163,15 @@ def get_questions_and_answers(text,multi_choice):
     Returns:
         dict or None: A dictionary containing the questions and answers if successful, or None if an error occurs.
     """
+    max_context_length = 8000
+    current_length = len(text.split())
+    
+    if current_length > max_context_length:
+        text = " ".join(text.split()[:max_context_length])
+    
     try:
         if multi_choice:
-            results = get_muti_QnA(text,multi_choice)
+            results = get_muti_QnA(text)
         else:
             results = get_binary_QnA(text)
         return results
