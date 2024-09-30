@@ -4,8 +4,7 @@ langchain_community
 openai
 python-dotenv
 langchain_groq
-pypdf
-
+PyPDF2
 # Django Web packages
 django
 djangorestframework
