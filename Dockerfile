@@ -16,9 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the project files into the container
 COPY . /app/
 
-# Copy the .env file into the container
-COPY .env /app/.env
-
 # Apply migrations
 RUN python manage.py migrate
 
