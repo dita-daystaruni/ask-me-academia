@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "post",
+			"name": "Multi choice",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -17,7 +17,7 @@
 						{
 							"key": "pdf_file",
 							"type": "file",
-							"src": "/C:/Users/Wayne/Documents/AI reseach/Auto Gen.pdf"
+							"src": "/C:/Users/Wayne/Downloads/(History Of Computing) Thomas Haigh, Paul E. Ceruzzi - A New History Of Modern Computing-The MIT Press (2021) TS3.pdf"
 						},
 						{
 							"key": "title",
@@ -33,6 +33,59 @@
 							"key": "multi_choice",
 							"value": "true",
 							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/upload/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"upload",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Binary choice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pdf_file",
+							"type": "file",
+							"src": [
+								"/C:/Users/Wayne/Documents/AI reseach/Auto Gen.pdf",
+								"/C:/Users/Wayne/Downloads/(History Of Computing) Thomas Haigh, Paul E. Ceruzzi - A New History Of Modern Computing-The MIT Press (2021) TS3.pdf"
+							]
+						},
+						{
+							"key": "title",
+							"value": "project_test",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "0",
+							"type": "text"
+						},
+						{
+							"key": "multi_choice",
+							"value": "true",
+							"type": "text",
+							"disabled": true
 						}
 					]
 				},
