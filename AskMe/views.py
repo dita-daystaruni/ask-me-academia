@@ -38,13 +38,6 @@ class LectureNotesUploadView(APIView):
             if questions_and_answers is None:
                 return Response({"error": "An error occurred while generating questions and answers."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            # Save the LectureNotes instance with the LLM response
-            # lecture_notes = LectureNotes.objects.create(
-            #     user_id=request.data['user_id'],
-            #     title=request.data['title'],
-            #     q_and_a=questions_and_answers.dict()
-            # )
-
             return Response(questions_and_answers, status=status.HTTP_201_CREATED)
         else:
             return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

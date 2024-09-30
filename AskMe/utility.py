@@ -1,26 +1,23 @@
 import PyPDF2
 import os
-from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.utils.function_calling import convert_to_openai_function
 from typing import List
 
-load_dotenv()
 
 class SingleQuestion(BaseModel):
     question: str = Field(
         title="Question",
         description="question from the lecture notes",
     )
-    answer: str = Field(
-        title="binary answer",
+    answer: bool = Field(
+        title="boolean answer",
         description="answer to the question in True or False",
     )
-
 
 class BinaryOutput(BaseModel):
     """Model to capture LLM response with questions and answers."""
@@ -54,25 +51,14 @@ SystemMessage = """
 You are a diligent and thorough study assistant for university students. Your task is to review lecture notes uploaded by students, understand the topic covered, and generate 10  questions and answers based on the notes for quick revision. The questions should be related to the topic and should help the student review the material effectively. 
 """
 
-
-# model = ChatGroq(
-#     temperature=0,
-#     model="llama3-70b-8192",
-#     api_key=os.getenv("GROQ_API_KEY"),
-# ).with_structured_output(Response)
-
-
 binaryParser = JsonOutputParser(pydantic_object=BinaryOutput)
 multiParser = JsonOutputParser(pydantic_object=MultiOutput)
 
-openai_binary_function = [convert_to_openai_function(BinaryOutput)]
-openai_multi_function = [convert_to_openai_function(MultiOutput)]
 
 model = ChatOpenAI(
     temperature=0,
     api_key=os.getenv("OPENAI_API_KEY"),
 )
-
 
 
 def process_pdf(file):
@@ -101,63 +87,91 @@ def process_pdf(file):
         return None
 
 human_text_bianry = """
+{SystemMessage}
+
 ### out put instaction ###
 - The system should generate 10 questions and answers based on the lecture notes.
-- The questions should be in true or false format.
 - The format of the output should be in the format bellow:
     {{"questions":[
-        {{"Question1": "Answer1"}},
-        {{"Question2": "Answer2"}}
+        {{"Question": "Question1", "Answer": "True}},
+        {{"Question2": "Question2", "Answer":"False"}},
         ...]}}
+        
+    {format_instructions}
+        
+    
     
 bellow are the attached notes:
 {text}   
 """
 
 human_text_multi_choice = """
+{SystemMessage}
+
 ### out put instaction ###
 - The system should generate 10 questions and answers based on the lecture notes.
 - The questions should be in the format bello:
-    {{questions:[
-        q1: 
-        {{question: What is the capital of Nigeria?,}}
-        {{multiple_choice: ["Abuja", "Lagos", "Kano", "Ibadan"],}}
-        {{correct answer: Abuja.}},
-        ...,
-        qn:
-        {{question: What is ...?,}}
-        {{multiple_choice: ["answer1", "answer2", "answer3", "answer4"],}}
-        {{correct answer : answer.}}
-    ]}}
+    {format_instructions}
         
 bellow are the attached notes:
 {text}  
 """
 
 
-def get_questions_and_answers(text, multiple_choice=True):
+def get_muti_QnA(text,SystemMessage = SystemMessage):
+    try:
+
+        #use the multi choice model
+        prompt = PromptTemplate(
+                                template = human_text_multi_choice,
+                                input_variables=['SystemMessage','text'],
+                                partial_variables={"format_instructions": multiParser.get_format_instructions()}
+                                )
+        chain = prompt | model | multiParser
+        results = chain.invoke({"SystemMessage":SystemMessage,"text": text,"format_instructions": multiParser.get_format_instructions()})
+        return results
+    except Exception as e:
+        print(e)
+        raise e
+    
+def get_binary_QnA(text):
     max_context_length = 8000
     current_length = len(text.split())
-    
-    human_text = human_text_multi_choice if multiple_choice else human_text_bianry
-    
+       
     if current_length > max_context_length:
         text = " ".join(text.split()[:max_context_length])
-        
     try:
-        if multiple_choice:
-            #use the multi choice model
-            prompt = ChatPromptTemplate.from_messages([("system", SystemMessage), ("human", human_text)])
-            chain = prompt | model | multiParser
-            results = chain.invoke({"text": text})
-            # results
-            return results
-        else:
-            #use the binary model
-            prompt = ChatPromptTemplate.from_messages([("system", SystemMessage), ("human", human_text)])
-            chain = prompt | model | binaryParser
-            results = chain.invoke({"text": text})
-            return results
-
+        prompt = PromptTemplate(
+                                template = human_text_bianry,
+                                input_variables=['SystemMessage','text'],
+                                partial_variables={"format_instructions": binaryParser.get_format_instructions()}
+                                )
+        chain = prompt | model | binaryParser
+        results = chain.invoke({"SystemMessage":SystemMessage,"text": text,"format_instructions": binaryParser.get_format_instructions()})
+        return results
     except Exception as e:
+        print(e)
         raise e
+    
+    
+    
+def get_questions_and_answers(text,multi_choice):
+    """
+    Generates questions and answers from the text content of a PDF file.
+
+    Args:
+        text (str): The text content of the PDF file.
+        multi_choice (bool): A boolean value indicating whether to generate multiple-choice questions.
+
+    Returns:
+        dict or None: A dictionary containing the questions and answers if successful, or None if an error occurs.
+    """
+    try:
+        if multi_choice:
+            results = get_muti_QnA(text,multi_choice)
+        else:
+            results = get_binary_QnA(text)
+        return results
+    except Exception as e:
+        print(f"Error generating questions and answers: {e}")
+        return None
